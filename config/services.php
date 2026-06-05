@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'vonage' => [
+        'key'            => env('VONAGE_API_KEY'),
+        'secret'         => env('VONAGE_API_SECRET'),
+        'sms_from'       => env('VONAGE_SMS_FROM', 'Vonage APIs'),
+        'whatsapp_from'  => env('VONAGE_WHATSAPP_FROM'),
+        'sandbox'        => env('VONAGE_SANDBOX', false),
+    ],
+
 ];

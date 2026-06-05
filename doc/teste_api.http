@@ -1,29 +1,82 @@
 ### Registrar Usuário
-POST http://localhost/api/auth/register
+POST http://localhost/api/user/register
 Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "João Silva",
-  "email": "joao@exemplo.com",
+  "name": "João Silva3",
+  "email": "joao3@exemplo.com",
   "password": "senha123456",
-  "password_confirmation": "senha123456"
+  "password_confirmation": "senha123456",
+  "role": "user",
+  "phone_number": "11955931866",
+  "latitude": -23.55052,
+  "longitude": -46.633308
 }
 
 ### Login Usuário
+# @name login
 POST http://localhost/api/auth/login
 Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "joao@exemplo.com",
+  "email": "joao3@exemplo.com",
   "password": "senha123456"
 }
 
-### Refresh Token
-@access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzYwNDg5NzA0LCJleHAiOjE3NjA0OTMzMDQsIm5iZiI6MTc2MDQ4OTcwNCwianRpIjoiN2MwRWVDM3IxRTlFS1hzdyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.yP5YOzifZ1HG_Dtb0ZqAiQyHESftOch9_phzBTrCRvY"
+### Obter usuário autenticado
+POST http://localhost/api/auth/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.$.access_token}}
 
+### Debugar token
+GET http://localhost/api/auth/debug/token
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### Refresh Token
+# @name refresh
 POST http://localhost/api/auth/refresh
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzYwNDg5NzA0LCJleHAiOjE3NjA0OTMzMDQsIm5iZiI6MTc2MDQ4OTcwNCwianRpIjoiN2MwRWVDM3IxRTlFS1hzdyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.yP5YOzifZ1HG_Dtb0ZqAiQyHESftOch9_phzBTrCRvY'
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### Logout
+POST http://localhost/api/auth/logout
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### Enviar notificação de verificação de email
+POST http://localhost/api/auth/email/verification-notification
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+{
+  "id": "01KTCZBKXTYGWG9Z621PWR4K98"
+}
+
+### Enviar notificação de verificação de telefone
+# @name send_phone_verification
+POST http://localhost/api/auth/phone/verification-notification
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+{
+  "id": "01KTCZBKXTYGWG9Z621PWR4K98",
+  "method": "sms"
+}
+
+### Verificar código de verificação do telefone
+POST http://localhost/api/verify-phone/{{send_phone_verification.response.body.$.id}}/{{send_phone_verification.response.body.$.hash}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "code": "822919"
+}
