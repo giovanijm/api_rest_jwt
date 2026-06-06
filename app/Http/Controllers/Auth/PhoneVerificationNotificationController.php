@@ -7,14 +7,14 @@ use App\Models\User;
 use App\Services\VonageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 
-/**
- * Controller handling phone verification notifications.
- */
 class PhoneVerificationNotificationController extends Controller
 {
+    private const COOLDOWN_SECONDS = 15;
+
     public function __construct(private VonageService $vonage) {}
 
     /**
@@ -43,6 +43,19 @@ class PhoneVerificationNotificationController extends Controller
             return response()->json(['message' => 'Phone already verified.'], 200);
         }
 
+        $key = 'phone-verification:' . $user->id;
+
+        if (RateLimiter::tooManyAttempts($key, 1)) {
+            $retryAfter = RateLimiter::availableIn($key);
+
+            return response()->json([
+                'message'             => "Aguarde {$retryAfter} segundo(s) antes de reenviar o código.",
+                'retry_after_seconds' => $retryAfter,
+            ], 429);
+        }
+
+        RateLimiter::hit($key, self::COOLDOWN_SECONDS);
+
         $method = strtolower($validator->validated()['method']);
 
         $user->regenerateTwoFactorCode($method);
@@ -57,7 +70,9 @@ class PhoneVerificationNotificationController extends Controller
             }
         } catch (Throwable $e) {
             report($e);
-            return response()->json(['message' => 'Failed to send verification code. Please try again.'], 503);
+            return response()->json([
+                'message' => $e->getMessage() ?: 'Falha ao enviar o código. Tente novamente.',
+            ], 503);
         }
 
         return response()->json([

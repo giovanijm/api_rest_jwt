@@ -21,8 +21,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "joao3@exemplo.com",
-  "password": "senha123456"
+  "email": "carlavieira@gmail.com",
+  "password": "w1941S!@#"
 }
 
 ### Obter usuário autenticado
@@ -57,7 +57,7 @@ Accept: application/json
 Authorization: Bearer {{login.response.body.$.access_token}}
 
 {
-  "id": "01KTCZBKXTYGWG9Z621PWR4K98"
+  "id": "01KTD7TF6DJA3DJNT9K8RTBVD6"
 }
 
 ### Enviar notificação de verificação de telefone
@@ -68,8 +68,8 @@ Accept: application/json
 Authorization: Bearer {{login.response.body.$.access_token}}
 
 {
-  "id": "01KTCZBKXTYGWG9Z621PWR4K98",
-  "method": "sms"
+  "id": "01KTD7TF6DJA3DJNT9K8RTBVD6",
+  "method": "whatsapp"
 }
 
 ### Verificar código de verificação do telefone

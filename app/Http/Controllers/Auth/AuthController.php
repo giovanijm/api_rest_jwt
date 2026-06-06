@@ -98,13 +98,22 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the token array structure.
+     * Renova o token JWT com claims frescos do banco de dados.
+     *
+     * O auth()->refresh() padrão copia os custom claims do token anterior,
+     * portanto email_verified / phone_verified não refletiriam mudanças recentes.
+     * A solução é invalidar o token atual e emitir um novo via login($user),
+     * o que força a chamada de getJWTCustomClaims() com dados atuais do BD.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function refresh(): JsonResponse
     {
-        return $this->respondWithToken(auth('api')->refresh());
+        $user = auth('api')->user()->fresh();
+        auth('api')->invalidate();
+        $token = auth('api')->login($user);
+
+        return $this->respondWithToken($token);
     }
 
     /**
